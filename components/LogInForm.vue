@@ -39,7 +39,6 @@ const onSubmit = form.handleSubmit((data) => {
           <FormControl>
             <Input type="email" v-bind="componentField" />
           </FormControl>
-          <FormMessage />
         </FormItem>
       </FormField>
       <FormField v-slot="{ componentField }" name="password">
@@ -48,7 +47,6 @@ const onSubmit = form.handleSubmit((data) => {
           <FormControl>
             <Input type="password" v-bind="componentField" />
           </FormControl>
-          <FormMessage />
         </FormItem>
       </FormField>
       <Button class="mt-2">Log In</Button>

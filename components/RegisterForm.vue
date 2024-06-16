@@ -17,8 +17,14 @@ const formSchema = toTypedSchema(
   z
     .object({
       email: z.string().email().min(3).max(64),
-      name: z.string().min(3).max(24),
-      password: z.string().min(6).max(64),
+      name: z
+        .string()
+        .min(3, { message: "Name must contain at least 3 characters" })
+        .max(24, { message: "Name must contain at most 24 characters" }),
+      password: z
+        .string()
+        .min(6, { message: "Password must contain at least 6 characters" })
+        .max(64, { message: "Password must contain at most 64 characters" }),
       passwordConfirm: z.string(),
     })
     .refine((data) => data.password === data.passwordConfirm, {
