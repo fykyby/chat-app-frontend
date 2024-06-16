@@ -9,4 +9,7 @@ useHead({
 
 <template>
   <h1>Chat App</h1>
+  <div>
+    <RegisterForm />
+  </div>
 </template>
