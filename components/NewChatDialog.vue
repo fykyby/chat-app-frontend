@@ -2,8 +2,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -33,8 +31,29 @@ import { Search } from "lucide-vue-next";
             <Search class="size-5 text-muted-foreground" />
           </span>
         </div>
-        <ScrollArea class="h-full max-h-[40dvh] border p-2">
+        <ScrollArea class="h-full max-h-[40dvh] p-2">
           <ul class="flex flex-col gap-2">
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" />
+            </li>
             <li>
               <UserButton name="john" avatar="" />
             </li>
