@@ -1,14 +1,31 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+
+const props = defineProps<{
+  name: string;
+  avatar: string;
+  responsive?: boolean;
+}>();
 </script>
 
 <template>
-  <Button variant="ghost" class="w-full justify-start gap-4">
+  <Button
+    variant="ghost"
+    class="w-full justify-start gap-1 p-1 font-normal"
+    :class="{
+      'lg:p-2': responsive,
+      'lg:gap-2': responsive,
+      'p-2': !responsive,
+      'gap-2': !responsive,
+    }"
+  >
     <Avatar class="h-8 w-8">
-      <AvatarImage src="" alt="" />
-      <AvatarFallback>CN</AvatarFallback>
+      <AvatarImage src="{{ avatar }}" alt="" />
+      <AvatarFallback>{{ name[0] }}</AvatarFallback>
     </Avatar>
-    <span> JohnDoe </span>
+    <span :class="{ hidden: responsive, 'lg:inline': responsive }">
+      {{ name }}
+    </span>
   </Button>
 </template>

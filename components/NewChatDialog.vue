@@ -20,7 +20,7 @@ import { Search } from "lucide-vue-next";
     <DialogTrigger as-child>
       <Button size="icon" variant="outline"><Plus /></Button>
     </DialogTrigger>
-    <DialogContent class="overflow-hidden max-h-[90dvh]">
+    <DialogContent class="max-h-[90dvh] overflow-hidden">
       <DialogHeader>
         <DialogTitle>Start A New Chat</DialogTitle>
       </DialogHeader>
@@ -28,60 +28,21 @@ import { Search } from "lucide-vue-next";
         <div class="relative w-full items-center">
           <Input id="search" type="text" placeholder="Search..." class="pl-9" />
           <span
-            class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
+            class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
           >
             <Search class="size-5 text-muted-foreground" />
           </span>
         </div>
-        <ScrollArea class="rounded-md border p-2 h-full max-h-[40dvh]">
+        <ScrollArea class="h-full max-h-[40dvh] border p-2">
           <ul class="flex flex-col gap-2">
             <li>
-              <UserButton />
+              <UserButton name="john" avatar="" />
             </li>
             <li>
-              <UserButton />
+              <UserButton name="john" avatar="" />
             </li>
             <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
-            </li>
-            <li>
-              <UserButton />
+              <UserButton name="john" avatar="" />
             </li>
           </ul>
         </ScrollArea>
