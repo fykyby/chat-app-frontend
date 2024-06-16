@@ -11,6 +11,7 @@ import {
 import { Plus } from "lucide-vue-next";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Search } from "lucide-vue-next";
 </script>
 
@@ -19,11 +20,11 @@ import { Search } from "lucide-vue-next";
     <DialogTrigger as-child>
       <Button size="icon" variant="outline"><Plus /></Button>
     </DialogTrigger>
-    <DialogContent>
+    <DialogContent class="overflow-hidden max-h-[90dvh]">
       <DialogHeader>
         <DialogTitle>Start A New Chat</DialogTitle>
       </DialogHeader>
-      <div>
+      <div class="flex flex-col gap-2">
         <div class="relative w-full items-center">
           <Input id="search" type="text" placeholder="Search..." class="pl-9" />
           <span
@@ -32,7 +33,58 @@ import { Search } from "lucide-vue-next";
             <Search class="size-5 text-muted-foreground" />
           </span>
         </div>
-        <ScrollArea class="rounded-md h-96"></ScrollArea>
+        <ScrollArea class="rounded-md border p-2 h-full max-h-[40dvh]">
+          <ul class="flex flex-col gap-2">
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+            <li>
+              <UserButton />
+            </li>
+          </ul>
+        </ScrollArea>
       </div>
     </DialogContent>
   </Dialog>
