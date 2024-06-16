@@ -2,8 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   shadcn: {
-    prefix: '',
-    componentDir: './components/ui'
+    prefix: "",
+    componentDir: "./components/ui",
   },
   postcss: {
     plugins: {
@@ -11,6 +11,6 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss', "shadcn-nuxt"],
-})
+  css: ["~/assets/css/main.css"],
+  modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt"],
+});
