@@ -7,15 +7,36 @@ import UserButton from "./UserButton.vue";
 <template>
   <div class="flex h-full flex-col border-r lg:w-72">
     <div
-      class="flex grow flex-col gap-y-2 overflow-y-auto bg-backgroundDark p-2 md:gap-4 md:py-4 lg:px-4"
+      class="flex grow flex-col gap-y-2 overflow-y-hidden bg-backgroundDark p-2 md:gap-4 md:py-4 lg:px-4"
     >
-      <nav class="flex flex-1 flex-col gap-0">
+      <nav class="flex flex-1 flex-col gap-0 overflow-y-hidden">
         <div class="flex justify-center pb-2 md:pb-4">
           <NewChatDialog />
         </div>
         <Separator />
         <ScrollArea class="grow py-2 md:py-4">
           <ul class="flex flex-col gap-2">
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
+            <li>
+              <UserButton name="john" avatar="" responsive />
+            </li>
             <li>
               <UserButton name="john" avatar="" responsive />
             </li>
