@@ -18,7 +18,7 @@ import { Search } from "lucide-vue-next";
 <template>
   <Dialog>
     <DialogTrigger as-child>
-      <Button size="icon" variant="outline"><Plus /></Button>
+      <Button size="icon" variant="ghost"><Plus /></Button>
     </DialogTrigger>
     <DialogContent class="max-h-[90dvh] overflow-hidden">
       <DialogHeader>
