@@ -9,7 +9,8 @@ useHead({
 
 <template>
   <h1>Chat App</h1>
-  <div>
+  <div class="flex flex-col gap-4 md:flex-row">
     <RegisterForm />
+    <LogInForm />
   </div>
 </template>
