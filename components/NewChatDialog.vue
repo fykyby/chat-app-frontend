@@ -16,27 +16,48 @@ import type { ApiResponse, User } from "~/lib/types";
 const config = useRuntimeConfig();
 
 const searchTimeout = ref<NodeJS.Timeout>();
-const pending = ref(false);
 const query = ref("");
-const results = ref<User[]>([]);
+const pending = ref(false);
+const data = ref<ApiResponse | null>(null);
+// const results = ref<User[]>([]);
 
 // TODO: Implement pages
 
 async function search(query: string) {
   pending.value = true;
 
-  const response = await $fetch<ApiResponse>(
-    config.public.apiUrl + `/users?q=${query}&page=${1}`,
-    {
-      method: "GET",
-      credentials: "include",
-      ignoreResponseError: true,
-    },
-  );
+  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/users", {
+    query: { q: query, page: 1 },
+    method: "GET",
+    credentials: "include",
+    ignoreResponseError: true,
+    async onRequestError() {
+      data.value = {
+        ok: false,
+        message: config.public.errorMessage,
+        data: null,
+      };
 
-  if (response.ok) {
-    results.value = response.data;
-  }
+      pending.value = false;
+    },
+  });
+
+  data.value = response;
+
+  pending.value = false;
+}
+
+async function startChat(userID: number) {
+  pending.value = true;
+
+  // const response = await $fetch<ApiResponse>(
+  //   config.public.apiUrl + `/users?q=${query}&page=${1}`,
+  //   {
+  //     method: "GET",
+  //     credentials: "include",
+  //     ignoreResponseError: true,
+  //   },
+  // );
 
   pending.value = false;
 }
@@ -85,10 +106,20 @@ onUnmounted(() => {
             <Search class="size-5 text-muted-foreground" />
           </span>
         </div>
-        <ScrollArea class="h-full max-h-[40dvh] p-2">
-          <Loading v-if="pending" class="mx-auto" />
-          <ul v-else class="flex flex-col gap-2">
-            <li v-for="user in results">
+        <Loading v-if="pending" class="mx-auto mt-2" />
+        <AlertError
+          class="mt-2"
+          v-else-if="data?.ok === false"
+          :message="data.message"
+        />
+        <AlertInfo
+          class="mt-2"
+          v-else-if="data?.data.users.length === 0"
+          :message="config.public.noResultsMessage"
+        />
+        <ScrollArea v-else class="h-full max-h-[40dvh] p-2">
+          <ul lass="flex flex-col gap-2">
+            <li v-for="user in data?.data.users">
               <UserButton :name="user.name" :avatar="user.avatar" />
             </li>
           </ul>

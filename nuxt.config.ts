@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     public: {
       errorMessage: "An unknown error has occurred",
       successMessage: "Action has been performed successfully",
+      noResultsMessage: "No results found",
       apiUrl: "",
       wsUrl: "",
     },

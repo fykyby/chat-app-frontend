@@ -44,13 +44,18 @@ const onSubmit = form.handleSubmit(async (values) => {
     credentials: "include",
     body: JSON.stringify(values),
     ignoreResponseError: true,
+    async onRequestError() {
+      data.value = {
+        ok: false,
+        message: config.public.errorMessage,
+        data: null,
+      };
+
+      pending.value = false;
+    },
   });
 
-  data.value = {
-    ok: response.ok !== undefined ? response.ok : false,
-    message: response.message ?? config.public.errorMessage,
-    data: response.data ?? null,
-  };
+  data.value = response;
 
   pending.value = false;
 
