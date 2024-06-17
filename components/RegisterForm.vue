@@ -69,6 +69,10 @@ const onSubmit = form.handleSubmit(async (values) => {
     data: response.data ?? null,
   };
 
+  if (response.ok) {
+    form.resetForm();
+  }
+
   pending.value = false;
 });
 </script>
