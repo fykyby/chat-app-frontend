@@ -23,22 +23,22 @@ async function logOut() {
 <template>
   <div v-if="user" class="flex h-full flex-col border-r lg:w-72">
     <div
-      class="flex grow flex-col gap-y-2 overflow-y-hidden bg-backgroundDark p-2 md:gap-4 md:py-4 lg:px-4"
+      class="flex grow flex-col gap-y-2 overflow-y-hidden bg-backgroundDark p-2 lg:gap-4 lg:px-4 lg:py-4"
     >
       <nav class="flex flex-1 flex-col gap-0 overflow-y-hidden">
-        <div class="flex justify-center pb-2 md:pb-4">
+        <div class="flex justify-center pb-2 lg:pb-4">
           <NewChatDialog />
         </div>
         <Separator />
-        <ScrollArea class="grow py-2 md:py-4">
+        <ScrollArea class="grow py-2 lg:py-4">
           <ul class="flex flex-col gap-2">
-            <!-- <li>
+            <li>
               <UserButton name="john" :avatar="null" responsive />
-            </li> -->
+            </li>
           </ul>
         </ScrollArea>
         <Separator />
-        <div class="flex justify-center pt-2 md:pt-4">
+        <div class="flex justify-center pt-2 lg:pt-4">
           <UserButton
             @click="logOut"
             :name="user.name"
