@@ -118,7 +118,7 @@ onUnmounted(() => {
           :message="config.public.noResultsMessage"
         />
         <ScrollArea v-else class="h-full max-h-[40dvh] p-2">
-          <ul lass="flex flex-col gap-2">
+          <ul class="flex flex-col gap-2">
             <li v-for="user in data?.data.users">
               <UserButton :name="user.name" :avatar="user.avatar" />
             </li>
