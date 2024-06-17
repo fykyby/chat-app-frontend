@@ -1,3 +1,10 @@
+<script setup lang="ts">
+const userCookie = useCookie("user");
+const user = useUser();
+console.log(userCookie.value);
+// user.value = JSON.parse(userCookie.value || "{}");
+</script>
+
 <template>
   <div class="flex h-full">
     <Sidebar />

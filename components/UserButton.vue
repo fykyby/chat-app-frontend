@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 defineProps<{
   name: string;
-  avatar: string;
+  avatar: string | null;
   responsive?: boolean;
   onClick?: () => void;
   href?: string;

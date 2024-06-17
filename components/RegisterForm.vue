@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
+import type { ApiResponse } from "~/lib/types";
+
+const config = useRuntimeConfig();
+
+const pending = ref(false);
+const data = ref<ApiResponse | null>(null);
 
 const formSchema = toTypedSchema(
   z
@@ -37,8 +43,26 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = form.handleSubmit((data) => {
-  console.log(data);
+const onSubmit = form.handleSubmit(async (values) => {
+  pending.value = true;
+
+  const response = await $fetch<ApiResponse>(
+    config.public.apiUrl + "/register",
+    {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(values),
+      ignoreResponseError: true,
+    },
+  );
+
+  data.value = {
+    ok: response.ok !== undefined ? response.ok : false,
+    message: response.message ?? config.public.errorMessage,
+    data: response.data ?? null,
+  };
+
+  pending.value = false;
 });
 </script>
 
@@ -82,7 +106,14 @@ const onSubmit = form.handleSubmit((data) => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button class="mt-2">Register</Button>
+      <div v-if="data" class="mt-2">
+        <AlertSuccess v-if="data.ok" :message="data?.message" />
+        <AlertError v-else :message="data?.message" />
+      </div>
+      <Button class="mt-2" :disabled="pending">
+        <Loading v-if="pending" />
+        <span v-else>Register</span>
+      </Button>
     </form>
   </div>
 </template>

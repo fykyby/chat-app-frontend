@@ -34,34 +34,7 @@ import { Search } from "lucide-vue-next";
         <ScrollArea class="h-full max-h-[40dvh] p-2">
           <ul class="flex flex-col gap-2">
             <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" />
+              <UserButton name="john" :avatar="null" />
             </li>
           </ul>
         </ScrollArea>

@@ -17,40 +17,13 @@ import UserButton from "./UserButton.vue";
         <ScrollArea class="grow py-2 md:py-4">
           <ul class="flex flex-col gap-2">
             <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
-            </li>
-            <li>
-              <UserButton name="john" avatar="" responsive />
+              <UserButton name="john" :avatar="null" responsive />
             </li>
           </ul>
         </ScrollArea>
         <Separator />
         <div class="flex justify-center pt-2 md:pt-4">
-          <UserButton name="john" avatar="" responsive />
+          <UserButton name="john" :avatar="null" responsive />
         </div>
       </nav>
     </div>
