@@ -11,10 +11,58 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-vue-next";
+import type { ApiResponse, User } from "~/lib/types";
+
+const config = useRuntimeConfig();
+
+const searchTimeout = ref<NodeJS.Timeout>();
+const pending = ref(false);
+const query = ref("");
+const results = ref<User[]>([]);
+
+// TODO: Implement pages
+
+async function search(query: string) {
+  pending.value = true;
+
+  const response = await $fetch<ApiResponse>(
+    config.public.apiUrl + `/users?q=${query}&page=${1}`,
+    {
+      method: "GET",
+      credentials: "include",
+      ignoreResponseError: true,
+    },
+  );
+
+  if (response.ok) {
+    results.value = response.data;
+  }
+
+  pending.value = false;
+}
+
+function openStateChanged(open: boolean) {
+  if (!open) {
+    clearTimeout(searchTimeout.value);
+  } else {
+    search("");
+  }
+}
+
+watch(query, (newQ, oldQ) => {
+  clearTimeout(searchTimeout.value);
+  searchTimeout.value = setTimeout(() => {
+    search(newQ);
+  }, 500);
+});
+
+onUnmounted(() => {
+  clearTimeout(searchTimeout.value);
+});
 </script>
 
 <template>
-  <Dialog>
+  <Dialog @update:open="openStateChanged">
     <DialogTrigger as-child>
       <Button size="icon" variant="ghost"><Plus /></Button>
     </DialogTrigger>
@@ -24,7 +72,13 @@ import { Search } from "lucide-vue-next";
       </DialogHeader>
       <div class="flex flex-col gap-2">
         <div class="relative w-full items-center">
-          <Input id="search" type="text" placeholder="Search..." class="pl-9" />
+          <Input
+            v-model="query"
+            id="search"
+            type="text"
+            placeholder="Search..."
+            class="pl-9"
+          />
           <span
             class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
           >
@@ -32,9 +86,10 @@ import { Search } from "lucide-vue-next";
           </span>
         </div>
         <ScrollArea class="h-full max-h-[40dvh] p-2">
-          <ul class="flex flex-col gap-2">
-            <li>
-              <UserButton name="john" :avatar="null" />
+          <Loading v-if="pending" class="mx-auto" />
+          <ul v-else class="flex flex-col gap-2">
+            <li v-for="user in results">
+              <UserButton :name="user.name" :avatar="user.avatar" />
             </li>
           </ul>
         </ScrollArea>
