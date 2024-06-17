@@ -28,7 +28,7 @@ defineProps<{
       }"
     >
       <Avatar class="h-8 w-8">
-        <AvatarImage src="{{ avatar }}" alt="" />
+        <AvatarImage :src="avatar ?? ''" alt="" />
         <AvatarFallback>{{ name[0] }}</AvatarFallback>
       </Avatar>
       <span :class="{ hidden: responsive, 'lg:inline': responsive }">
@@ -49,7 +49,7 @@ defineProps<{
     :onClick="onClick"
   >
     <Avatar class="h-8 w-8">
-      <AvatarImage src="{{ avatar }}" alt="" />
+      <AvatarImage :src="avatar ?? ''" alt="" />
       <AvatarFallback>{{ name[0] }}</AvatarFallback>
     </Avatar>
     <span :class="{ hidden: responsive, 'lg:inline': responsive }">

@@ -2,10 +2,26 @@
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UserButton from "./UserButton.vue";
+import type { ApiResponse } from "~/lib/types";
+
+const config = useRuntimeConfig();
+const user = useUser();
+
+async function logOut() {
+  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    user.value = null;
+    await navigateTo("/");
+  }
+}
 </script>
 
 <template>
-  <div class="flex h-full flex-col border-r lg:w-72">
+  <div v-if="user" class="flex h-full flex-col border-r lg:w-72">
     <div
       class="flex grow flex-col gap-y-2 overflow-y-hidden bg-backgroundDark p-2 md:gap-4 md:py-4 lg:px-4"
     >
@@ -16,14 +32,19 @@ import UserButton from "./UserButton.vue";
         <Separator />
         <ScrollArea class="grow py-2 md:py-4">
           <ul class="flex flex-col gap-2">
-            <li>
+            <!-- <li>
               <UserButton name="john" :avatar="null" responsive />
-            </li>
+            </li> -->
           </ul>
         </ScrollArea>
         <Separator />
         <div class="flex justify-center pt-2 md:pt-4">
-          <UserButton name="john" :avatar="null" responsive />
+          <UserButton
+            @click="logOut"
+            :name="user.name"
+            :avatar="user.avatar"
+            responsive
+          />
         </div>
       </nav>
     </div>

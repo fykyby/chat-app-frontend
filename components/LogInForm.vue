@@ -46,6 +46,10 @@ const onSubmit = form.handleSubmit(async (values) => {
   };
 
   pending.value = false;
+
+  if (response.ok) {
+    await navigateTo("/chats");
+  }
 });
 </script>
 
