@@ -1,8 +1,4 @@
-<script setup lang="ts">
-useHead({
-  title: "Chats - Chat App",
-});
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <h1>Chats</h1>

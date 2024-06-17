@@ -13,6 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import type { ApiResponse } from "~/lib/types";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const config = useRuntimeConfig();
 
@@ -67,53 +74,59 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="h-fit w-full rounded-md border p-4">
-    <h2 class="mb-4">Register</h2>
-    <form @submit="onSubmit" class="flex flex-col gap-2 sm:gap-4">
-      <FormField v-slot="{ componentField }" name="email">
-        <FormItem v-auto-animate>
-          <FormLabel>Email</FormLabel>
-          <FormControl>
-            <Input type="email" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="name">
-        <FormItem v-auto-animate>
-          <FormLabel>Name</FormLabel>
-          <FormControl>
-            <Input type="text" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="password">
-        <FormItem v-auto-animate>
-          <FormLabel>Password</FormLabel>
-          <FormControl>
-            <Input type="password" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="passwordConfirm">
-        <FormItem v-auto-animate>
-          <FormLabel>Confirm Password</FormLabel>
-          <FormControl>
-            <Input type="password" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <div v-if="data" class="mt-2">
-        <AlertSuccess v-if="data.ok" :message="data?.message" />
-        <AlertError v-else :message="data?.message" />
-      </div>
-      <Button class="mt-2" :disabled="pending">
+  <Card class="w-full">
+    <CardHeader>
+      <CardTitle>Register</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <form @submit="onSubmit" class="flex flex-col gap-4" id="registerForm">
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem v-auto-animate>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input type="email" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="name">
+          <FormItem v-auto-animate>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input type="text" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="password">
+          <FormItem v-auto-animate>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <Input type="password" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="passwordConfirm">
+          <FormItem v-auto-animate>
+            <FormLabel>Confirm Password</FormLabel>
+            <FormControl>
+              <Input type="password" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <div v-if="data" class="mt-2">
+          <AlertSuccess v-if="data.ok" :message="data.message" />
+          <AlertError v-else :message="data.message" />
+        </div>
+      </form>
+    </CardContent>
+    <CardFooter>
+      <Button class="w-full" :disabled="pending" form="registerForm">
         <Loading v-if="pending" />
         <span v-else>Register</span>
       </Button>
-    </form>
-  </div>
+    </CardFooter>
+  </Card>
 </template>
