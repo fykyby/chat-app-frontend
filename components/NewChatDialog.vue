@@ -15,6 +15,7 @@ import type { ApiResponse, User } from "~/lib/types";
 
 const config = useRuntimeConfig();
 
+const open = ref(false);
 const searchTimeout = ref<NodeJS.Timeout>();
 const query = ref("");
 const pending = ref(false);
@@ -70,6 +71,7 @@ async function startChat(userID: number) {
 
   if (response.ok) {
     await navigateTo("/chats/" + response.data.id);
+    open.value = false;
   }
 }
 
@@ -94,7 +96,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Dialog @update:open="openStateChanged">
+  <Dialog v-model:open="open" @update:open="openStateChanged">
     <DialogTrigger as-child>
       <Button size="icon" variant="ghost"><Plus /></Button>
     </DialogTrigger>
