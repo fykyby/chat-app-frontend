@@ -50,16 +50,25 @@ async function search(query: string) {
 async function startChat(userID: number) {
   pending.value = true;
 
-  // const response = await $fetch<ApiResponse>(
-  //   config.public.apiUrl + `/users?q=${query}&page=${1}`,
-  //   {
-  //     method: "GET",
-  //     credentials: "include",
-  //     ignoreResponseError: true,
-  //   },
-  // );
+  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/chats", {
+    method: "POST",
+    credentials: "include",
+    ignoreResponseError: true,
+    body: JSON.stringify({ recipientID: userID }),
+    async onRequestError() {
+      data.value = {
+        ok: false,
+        message: config.public.errorMessage,
+        data: null,
+      };
+
+      pending.value = false;
+    },
+  });
 
   pending.value = false;
+
+  // TODO: Redirect to new chat page
 }
 
 function openStateChanged(open: boolean) {
@@ -70,10 +79,10 @@ function openStateChanged(open: boolean) {
   }
 }
 
-watch(query, (newQ, oldQ) => {
+watch(query, (q) => {
   clearTimeout(searchTimeout.value);
   searchTimeout.value = setTimeout(() => {
-    search(newQ);
+    search(q);
   }, 500);
 });
 
@@ -120,7 +129,11 @@ onUnmounted(() => {
         <ScrollArea v-else class="h-full max-h-[40dvh] p-2">
           <ul class="flex flex-col gap-2">
             <li v-for="user in data?.data.users">
-              <UserButton :name="user.name" :avatar="user.avatar" />
+              <UserButton
+                @click="startChat(user.id)"
+                :name="user.name"
+                :avatar="user.avatar"
+              />
             </li>
           </ul>
         </ScrollArea>

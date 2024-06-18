@@ -7,17 +7,15 @@ import type { ApiResponse } from "~/lib/types";
 const config = useRuntimeConfig();
 const user = useUser();
 
-async function logOut() {
-  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/logout", {
-    method: "POST",
+const headers = useRequestHeaders(["cookie"]);
+const { data, pending } = await useLazyFetch<ApiResponse>(
+  config.public.apiUrl + "/chats",
+  {
+    headers,
     credentials: "include",
-  });
-
-  if (response.ok) {
-    user.value = null;
-    await navigateTo("/");
-  }
-}
+    ignoreResponseError: true,
+  },
+);
 </script>
 
 <template>
@@ -30,21 +28,22 @@ async function logOut() {
           <NewChatDialog />
         </div>
         <Separator />
-        <ScrollArea class="grow py-2 lg:py-4">
+        <Loading v-if="pending" />
+        <ScrollArea v-else class="grow py-2 lg:py-4">
           <ul class="flex flex-col gap-2">
-            <li>
-              <UserButton name="john" :avatar="null" responsive />
+            <li v-for="chat in data?.data">
+              <UserButton
+                :href="'chats/' + chat.id"
+                :name="chat.name"
+                :avatar="chat.avatar"
+                responsive
+              />
             </li>
           </ul>
         </ScrollArea>
         <Separator />
         <div class="flex justify-center pt-2 lg:pt-4">
-          <UserButton
-            @click="logOut"
-            :name="user.name"
-            :avatar="user.avatar"
-            responsive
-          />
+          <UserMenu />
         </div>
       </nav>
     </div>
