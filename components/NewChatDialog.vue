@@ -68,7 +68,9 @@ async function startChat(userID: number) {
 
   pending.value = false;
 
-  // TODO: Redirect to new chat page
+  if (response.ok) {
+    await navigateTo("/chats/" + response.data.id);
+  }
 }
 
 function openStateChanged(open: boolean) {
