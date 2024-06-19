@@ -50,8 +50,8 @@ async function sendMessage(e: Event) {
       >
         <AlertError :message="data?.message" />
       </div>
-      <div v-else class="flex h-full flex-col gap-2 md:gap-4">
-        <div class="flex h-fit items-center gap-2 md:gap-4">
+      <div v-else class="flex h-full flex-col gap-2 sm:gap-4">
+        <div class="flex h-fit items-center gap-2 sm:gap-4">
           <Button as-child href="/chats" size="icon" variant="ghost">
             <NuxtLink>
               <ArrowLeft />
@@ -68,7 +68,7 @@ async function sendMessage(e: Event) {
         <Separator />
         <ScrollArea class="h-full">
           <ul
-            class="flex h-full flex-grow flex-col-reverse gap-2 py-2 md:gap-4 md:py-4"
+            class="flex h-full flex-grow flex-col-reverse gap-2 py-2 sm:gap-4 sm:py-4"
           >
             <li
               v-for="message in data?.data.messages"
@@ -88,7 +88,7 @@ async function sendMessage(e: Event) {
                   {{ message.user.name }}
                 </div>
                 <div
-                  class="w-fit rounded-lg border p-2 md:leading-7"
+                  class="w-fit rounded-lg border p-2 sm:leading-7"
                   :class="{
                     'bg-muted': user?.id === message.user.id,
                     'text-foreground': user?.id === message.user.id,
