@@ -25,7 +25,7 @@ const { data, pending } = await useLazyFetch<ChatResponse>(
 
 // const {status, data, send, open, close} = useWebSocket()
 
-const inputElement = ref<HTMLInputElement | null>(null);
+const inputElement = ref<any>(null);
 const message = ref("");
 
 async function sendMessage(e: Event) {
@@ -36,12 +36,9 @@ async function sendMessage(e: Event) {
   message.value = "";
 }
 
-// onMounted(() => {
-//   if (!inputElement.value) return;
-//   inputElement.value.focus();
-
-//   // console.log(data.value);
-// });
+watchEffect(() => {
+  inputElement.value?.getInputRef().focus();
+});
 </script>
 
 <template>
