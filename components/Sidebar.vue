@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import UserButton from "./UserButton.vue";
 import type { ApiResponse, Chat } from "~/lib/types";
 
 interface ChatsResponse extends ApiResponse {
@@ -12,12 +9,19 @@ const config = useRuntimeConfig();
 const user = useUser();
 
 const headers = useRequestHeaders(["cookie"]);
-const { data, pending } = await useLazyFetch<ChatsResponse>(
+const { data, pending, refresh } = await useLazyFetch<ChatsResponse>(
   config.public.apiUrl + "/chats",
   {
     headers,
     credentials: "include",
     ignoreResponseError: true,
+  },
+);
+
+watch(
+  () => user.value,
+  async () => {
+    await refresh();
   },
 );
 </script>

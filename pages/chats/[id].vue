@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { ApiResponse, Chat, Message } from "~/lib/types";
 import { ArrowLeft, Send } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
 
 interface ChatResponse extends ApiResponse {
   data: {
@@ -27,6 +23,9 @@ const { data, pending } = await useLazyFetch<ChatResponse>(
   },
 );
 
+// const {status, data, send, open, close} = useWebSocket()
+
+const inputElement = ref<HTMLInputElement | null>(null);
 const message = ref("");
 
 async function sendMessage(e: Event) {
@@ -36,6 +35,13 @@ async function sendMessage(e: Event) {
 
   message.value = "";
 }
+
+// onMounted(() => {
+//   if (!inputElement.value) return;
+//   inputElement.value.focus();
+
+//   // console.log(data.value);
+// });
 </script>
 
 <template>
@@ -101,7 +107,12 @@ async function sendMessage(e: Event) {
           </ul>
         </ScrollArea>
         <form class="flex gap-1" @submit="sendMessage">
-          <Input v-model="message" autofocus placeholder="Type a message..." />
+          <Input
+            ref="inputElement"
+            v-model="message"
+            autofocus
+            placeholder="Type a message..."
+          />
           <Button type="submit" size="icon" variant="outline">
             <Send />
           </Button>

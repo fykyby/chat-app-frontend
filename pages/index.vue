@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-</script>
-
 <template>
   <h1 class="my-8 text-center">Chat App</h1>
   <div class="mx-auto w-full max-w-lg">

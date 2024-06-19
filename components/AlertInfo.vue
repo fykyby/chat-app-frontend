@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Info } from "lucide-vue-next";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 defineProps<{
   message: string;
