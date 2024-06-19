@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ApiResponse, Chat, Message } from "~/lib/types";
 import { ArrowLeft, Send } from "lucide-vue-next";
-import { useWebSocket } from "@vueuse/core";
+import { useWebSocket, useInfiniteScroll } from "@vueuse/core";
 
 interface ChatResponse extends ApiResponse {
   data: {
@@ -12,12 +12,17 @@ interface ChatResponse extends ApiResponse {
 }
 
 const SCROLL_RESET_MAX_OFFSET = 300;
+const PAGE_SIZE = 20;
 
 const config = useRuntimeConfig();
 const route = useRoute();
 const user = useUser();
 
-const scrollElement = ref<HTMLElement | null>(null);
+const scrollElement_ = ref<HTMLElement | null>(null);
+const scrollElement = computed((): HTMLElement | null => {
+  const el = scrollElement_?.value?.parentElement?.parentElement;
+  return el ?? null;
+});
 const inputElement = ref<any>(null);
 const message = ref("");
 const page = ref(1);
@@ -47,7 +52,7 @@ const {
 } = useWebSocket(config.public.wsUrl + "/chats/" + route.params.id, {
   autoReconnect: {
     retries: 3,
-    delay: 2000,
+    delay: 1000,
   },
 });
 
@@ -66,22 +71,26 @@ async function sendMessage(e: Event) {
   message.value = "";
 }
 
-function loadNextPage() {
+async function loadNextPage() {
   if (!data.value?.data.hasMore) return;
   page.value += 1;
-  refresh();
+  await refresh();
 }
 
 function resetScrollPos() {
-  const viewport = scrollElement.value?.parentElement?.parentElement;
-  viewport?.scrollTo(0, viewport.scrollHeight);
+  scrollElement.value?.scrollTo(0, scrollElement.value.scrollHeight);
 }
 
+// Check if chat is scrolled to the bottom minus the offset
 function scrollPosNearBottom(): boolean {
-  const viewport = scrollElement.value?.parentElement?.parentElement;
-  if (viewport && viewport.scrollHeight && viewport.clientHeight) {
-    const pos = Math.round(viewport.scrollTop);
-    const height = viewport.scrollHeight - viewport.clientHeight;
+  if (
+    scrollElement.value &&
+    scrollElement.value.scrollHeight &&
+    scrollElement.value.clientHeight
+  ) {
+    const pos = Math.round(scrollElement.value.scrollTop);
+    const height =
+      scrollElement.value.scrollHeight - scrollElement.value.clientHeight;
     if (height - pos < SCROLL_RESET_MAX_OFFSET) {
       return true;
     }
@@ -89,49 +98,86 @@ function scrollPosNearBottom(): boolean {
   return false;
 }
 
-watchEffect(() => {
-  if (!wsData.value) {
-    resetScrollPos();
-    return;
-  }
+// On new WS message
+watch(
+  [wsData, scrollElement],
+  () => {
+    if (!scrollElement.value || !data.value?.data.messages) return;
+    if (!wsData.value) {
+      resetScrollPos();
+      return;
+    }
 
-  const newMessage: Message = JSON.parse(wsData.value);
-  data.value?.data.messages.unshift(newMessage);
+    const newMessage: Message = JSON.parse(wsData.value);
+    const newMessages = [...data.value.data.messages];
+    newMessages.unshift(newMessage);
 
-  if (scrollPosNearBottom()) {
-    resetScrollPos();
-  }
-});
+    if (newMessages.length >= PAGE_SIZE && scrollPosNearBottom()) {
+      data.value.data.messages = newMessages.slice(0, 20);
+      data.value.data.hasMore = true;
+      page.value = 1;
+    } else {
+      data.value.data.messages = newMessages;
+    }
+    console.log(data.value.data.messages.length);
 
+    if (scrollPosNearBottom()) {
+      resetScrollPos();
+    }
+  },
+  { immediate: true },
+);
+
+// Autofocus
 watchEffect(() => {
   inputElement.value?.getInputRef().focus();
 });
 
+// Set data from response
 watch(
   () => resData.value,
   (newVal) => {
-    if (!newVal) return;
-    if (!data.value) {
+    if (!data.value || !newVal) {
       data.value = newVal;
       return;
     }
 
-    const newData = data.value;
-    newData.data.hasMore = newVal.data.hasMore;
-    newData.data.messages.push(...newVal.data.messages);
+    newVal.data.messages.unshift(...data.value.data.messages);
+    data.value = newVal;
   },
   {
     immediate: true,
   },
 );
+
+// Handle scroll events for infinite scroll
+async function handleScroll() {
+  if (
+    !scrollElement.value ||
+    scrollElement.value.scrollTop > SCROLL_RESET_MAX_OFFSET ||
+    pending.value
+  )
+    return;
+
+  loadNextPage();
+}
+
+// Set event listener for infinite scroll
+watchEffect(() => {
+  scrollElement.value?.addEventListener("scroll", handleScroll);
+});
+
+onBeforeUnmount(() => {
+  scrollElement.value?.removeEventListener("scroll", handleScroll);
+
+  // Reset data
+  resData.value = null;
+});
 </script>
 
 <template>
   <div class="h-full">
-    <div v-if="pending" class="flex h-full w-full items-center justify-center">
-      <Loading />
-    </div>
-    <div v-else class="h-full">
+    <div class="h-full">
       <div
         v-if="!data?.ok"
         class="flex h-full w-full items-center justify-center"
@@ -152,16 +198,22 @@ watch(
           <span>
             {{ data?.data.chat.name }}
           </span>
-          <Button @click="loadNextPage"> Load More </Button>
         </div>
         <Separator />
-        <ScrollArea class="-mr-2 h-full pr-2 sm:-mr-3 sm:pr-3">
+        <ScrollArea as-child class="-mr-2 h-full pr-2 sm:-mr-3 sm:pr-3">
+          <div
+            v-if="pending"
+            class="my-2 flex w-full items-center justify-center"
+          >
+            <Loading />
+          </div>
           <ul
-            ref="scrollElement"
+            ref="scrollElement_"
             class="flex h-full flex-grow flex-col-reverse gap-2 py-2"
           >
             <li
               v-for="message in data?.data.messages"
+              :key="message.id"
               class="flex w-full items-end gap-2"
               :class="{ 'flex-row-reverse': user?.id === message.user.id }"
             >
@@ -196,7 +248,7 @@ watch(
         <AlertError v-else-if="wsStatus === 'CLOSED'" message="Disconnected" />
         <form v-else class="flex gap-1" @submit="sendMessage">
           <Input
-            ref="inputElement"
+            ref="inputElement_"
             v-model="message"
             autofocus
             placeholder="Type a message..."
