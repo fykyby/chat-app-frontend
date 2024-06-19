@@ -6,10 +6,9 @@ interface ChatsResponse extends ApiResponse {
 }
 
 const config = useRuntimeConfig();
-const user = useUser();
 
 const headers = useRequestHeaders(["cookie"]);
-const { data, pending, refresh } = await useLazyFetch<ChatsResponse>(
+const { data, pending } = await useLazyFetch<ChatsResponse>(
   config.public.apiUrl + "/chats",
   {
     headers,
@@ -17,17 +16,10 @@ const { data, pending, refresh } = await useLazyFetch<ChatsResponse>(
     ignoreResponseError: true,
   },
 );
-
-watch(
-  () => user.value,
-  async () => {
-    await refresh();
-  },
-);
 </script>
 
 <template>
-  <div v-if="user" class="flex h-full flex-col border-r sm:w-72">
+  <div class="flex h-full flex-col border-r sm:w-72">
     <div
       class="flex grow flex-col gap-y-2 overflow-y-hidden bg-backgroundDark p-2 sm:gap-4 sm:px-4 sm:py-4"
     >
