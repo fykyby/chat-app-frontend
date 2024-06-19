@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ApiResponse, Chat, Message } from "~/lib/types";
 import { ArrowLeft, Send } from "lucide-vue-next";
+import { useWebSocket } from "@vueuse/core";
 
 interface ChatResponse extends ApiResponse {
   data: {
@@ -23,18 +24,39 @@ const { data, pending } = await useLazyFetch<ChatResponse>(
   },
 );
 
-// const {status, data, send, open, close} = useWebSocket()
+const {
+  status,
+  data: wsData,
+  send,
+} = useWebSocket(config.public.wsUrl + "/chats/" + route.params.id, {
+  autoReconnect: {
+    retries: 3,
+    delay: 2000,
+  },
+});
 
 const inputElement = ref<any>(null);
 const message = ref("");
 
 async function sendMessage(e: Event) {
   e.preventDefault();
+  if (message.value.length === 0) return;
 
-  console.log(message.value);
+  send(
+    JSON.stringify({
+      userID: user.value?.id,
+      content: message.value,
+    }),
+  );
 
   message.value = "";
 }
+
+watchEffect(() => {
+  if (!wsData.value) return;
+  const newMessage: Message = JSON.parse(wsData.value);
+  data.value?.data.messages.unshift(newMessage);
+});
 
 watchEffect(() => {
   inputElement.value?.getInputRef().focus();
@@ -103,7 +125,11 @@ watchEffect(() => {
             </li>
           </ul>
         </ScrollArea>
-        <form class="flex gap-1" @submit="sendMessage">
+        <div v-if="status === 'CONNECTING'">
+          <Loading class="mx-auto my-2" />
+        </div>
+        <AlertError v-else-if="status === 'CLOSED'" />
+        <form v-else class="flex gap-1" @submit="sendMessage">
           <Input
             ref="inputElement"
             v-model="message"
