@@ -10,6 +10,8 @@ interface ChatResponse extends ApiResponse {
   };
 }
 
+const SCROLL_RESET_MAX_OFFSET = 300;
+
 const config = useRuntimeConfig();
 const route = useRoute();
 const user = useUser();
@@ -35,11 +37,13 @@ const {
   },
 });
 
+const scrollElement = ref<HTMLElement | null>(null);
 const inputElement = ref<any>(null);
 const message = ref("");
 
 async function sendMessage(e: Event) {
   e.preventDefault();
+
   if (message.value.length === 0) return;
 
   send(
@@ -52,10 +56,35 @@ async function sendMessage(e: Event) {
   message.value = "";
 }
 
+function resetScrollPos() {
+  const viewport = scrollElement.value?.parentElement?.parentElement;
+  viewport?.scrollTo(0, viewport.scrollHeight);
+}
+
+function shouldResetScrollPos(): boolean {
+  const viewport = scrollElement.value?.parentElement?.parentElement;
+  if (viewport && viewport.scrollHeight && viewport.clientHeight) {
+    const pos = Math.round(viewport.scrollTop);
+    const height = viewport.scrollHeight - viewport.clientHeight;
+    if (height - pos < SCROLL_RESET_MAX_OFFSET) {
+      return true;
+    }
+  }
+  return false;
+}
+
 watchEffect(() => {
-  if (!wsData.value) return;
+  if (!wsData.value) {
+    resetScrollPos();
+    return;
+  }
+
   const newMessage: Message = JSON.parse(wsData.value);
   data.value?.data.messages.unshift(newMessage);
+
+  if (shouldResetScrollPos()) {
+    resetScrollPos();
+  }
 });
 
 watchEffect(() => {
@@ -93,7 +122,8 @@ watchEffect(() => {
         <Separator />
         <ScrollArea class="h-full">
           <ul
-            class="flex h-full flex-grow flex-col-reverse gap-2 py-2 sm:gap-4 sm:py-4"
+            ref="scrollElement"
+            class="flex h-full flex-grow flex-col-reverse gap-2 py-2"
           >
             <li
               v-for="message in data?.data.messages"
@@ -128,7 +158,7 @@ watchEffect(() => {
         <div v-if="status === 'CONNECTING'">
           <Loading class="mx-auto my-2" />
         </div>
-        <AlertError v-else-if="status === 'CLOSED'" />
+        <AlertError v-else-if="status === 'CLOSED'" message="Disconnected" />
         <form v-else class="flex gap-1" @submit="sendMessage">
           <Input
             ref="inputElement"
