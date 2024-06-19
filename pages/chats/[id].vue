@@ -27,9 +27,9 @@ const { data, pending } = await useLazyFetch<ChatResponse>(
 );
 
 const {
-  status,
+  status: wsStatus,
   data: wsData,
-  send,
+  send: wsSend,
 } = useWebSocket(config.public.wsUrl + "/chats/" + route.params.id, {
   autoReconnect: {
     retries: 3,
@@ -46,7 +46,7 @@ async function sendMessage(e: Event) {
 
   if (message.value.length === 0) return;
 
-  send(
+  wsSend(
     JSON.stringify({
       userID: user.value?.id,
       content: message.value,
@@ -155,10 +155,10 @@ watchEffect(() => {
             </li>
           </ul>
         </ScrollArea>
-        <div v-if="status === 'CONNECTING'">
+        <div v-if="wsStatus === 'CONNECTING'">
           <Loading class="mx-auto my-2" />
         </div>
-        <AlertError v-else-if="status === 'CLOSED'" message="Disconnected" />
+        <AlertError v-else-if="wsStatus === 'CLOSED'" message="Disconnected" />
         <form v-else class="flex gap-1" @submit="sendMessage">
           <Input
             ref="inputElement"
