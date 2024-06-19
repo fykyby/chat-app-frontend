@@ -146,7 +146,7 @@ onUnmounted(() => {
         />
         <ScrollArea v-else class="h-full max-h-[40dvh] p-2">
           <ul class="flex flex-col gap-2">
-            <li v-for="user in data?.data?.users">
+            <li v-for="user in data?.data?.users" :key="user.id">
               <UserButton
                 @click="startChat(user.id)"
                 :name="user.name"

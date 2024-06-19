@@ -35,7 +35,7 @@ const { data, pending } = await useLazyFetch<ChatsResponse>(
         <Loading v-if="pending" />
         <ScrollArea v-else class="grow py-2 lg:py-4">
           <ul class="flex flex-col gap-2">
-            <li v-for="chat in data?.data">
+            <li v-for="chat in data?.data" :key="chat.id">
               <UserButton
                 :href="'/chats/' + chat.id"
                 :name="chat.name"
