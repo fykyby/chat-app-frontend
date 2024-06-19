@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-vue-next";
-import type { ApiResponse, User } from "~/lib/types";
+import type { ApiResponse } from "~/lib/types";
 
 const config = useRuntimeConfig();
 
