@@ -11,7 +11,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-vue-next";
-import type { ApiResponse } from "~/lib/types";
+import type { ApiResponse, Chat, User } from "~/lib/types";
+
+interface UsersResponse extends ApiResponse {
+  data: {
+    users: User[];
+    hasMore: boolean;
+  } | null;
+}
+
+interface ChatResponse extends ApiResponse {
+  data: Chat;
+}
 
 const config = useRuntimeConfig();
 
@@ -19,7 +30,7 @@ const open = ref(false);
 const searchTimeout = ref<NodeJS.Timeout>();
 const query = ref("");
 const pending = ref(false);
-const data = ref<ApiResponse | null>(null);
+const data = ref<UsersResponse>();
 // const results = ref<User[]>([]);
 
 // TODO: Implement pages
@@ -27,21 +38,24 @@ const data = ref<ApiResponse | null>(null);
 async function search(query: string) {
   pending.value = true;
 
-  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/users", {
-    query: { q: query, page: 1 },
-    method: "GET",
-    credentials: "include",
-    ignoreResponseError: true,
-    async onRequestError() {
-      data.value = {
-        ok: false,
-        message: config.public.errorMessage,
-        data: null,
-      };
+  const response = await $fetch<UsersResponse>(
+    config.public.apiUrl + "/users",
+    {
+      query: { q: query, page: 1 },
+      method: "GET",
+      credentials: "include",
+      ignoreResponseError: true,
+      async onRequestError() {
+        data.value = {
+          ok: false,
+          message: config.public.errorMessage,
+          data: null,
+        };
 
-      pending.value = false;
+        pending.value = false;
+      },
     },
-  });
+  );
 
   data.value = response;
 
@@ -51,7 +65,7 @@ async function search(query: string) {
 async function startChat(userID: number) {
   pending.value = true;
 
-  const response = await $fetch<ApiResponse>(config.public.apiUrl + "/chats", {
+  const response = await $fetch<ChatResponse>(config.public.apiUrl + "/chats", {
     method: "POST",
     credentials: "include",
     ignoreResponseError: true,
@@ -127,12 +141,12 @@ onUnmounted(() => {
         />
         <AlertInfo
           class="mt-2"
-          v-else-if="data?.data.users.length === 0"
+          v-else-if="data?.data?.users.length === 0"
           :message="config.public.noResultsMessage"
         />
         <ScrollArea v-else class="h-full max-h-[40dvh] p-2">
           <ul class="flex flex-col gap-2">
-            <li v-for="user in data?.data.users">
+            <li v-for="user in data?.data?.users">
               <UserButton
                 @click="startChat(user.id)"
                 :name="user.name"

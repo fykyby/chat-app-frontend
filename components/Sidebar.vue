@@ -2,13 +2,17 @@
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UserButton from "./UserButton.vue";
-import type { ApiResponse } from "~/lib/types";
+import type { ApiResponse, Chat } from "~/lib/types";
+
+interface ChatsResponse extends ApiResponse {
+  data: Chat[];
+}
 
 const config = useRuntimeConfig();
 const user = useUser();
 
 const headers = useRequestHeaders(["cookie"]);
-const { data, pending } = await useLazyFetch<ApiResponse>(
+const { data, pending } = await useLazyFetch<ChatsResponse>(
   config.public.apiUrl + "/chats",
   {
     headers,

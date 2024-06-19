@@ -1,3 +1,9 @@
+export type ApiResponse = {
+  ok: boolean;
+  message: string;
+  data: any;
+};
+
 export type User = {
   id: number;
   name: string;
@@ -11,8 +17,9 @@ export type Message = {
   createdAt: string;
 };
 
-export type ApiResponse = {
-  ok: boolean;
-  message: string;
-  data: any;
+export type Chat = {
+  id: number;
+  name: string;
+  avatar: string;
+  isGroup: boolean;
 };
