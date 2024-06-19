@@ -21,8 +21,8 @@ defineProps<{
     <NuxtLink
       :href="href"
       :class="{
-        'lg:p-2': responsive,
-        'lg:gap-2': responsive,
+        'md:p-2': responsive,
+        'md:gap-2': responsive,
         'p-2': !responsive,
         'gap-2': !responsive,
       }"
@@ -31,7 +31,7 @@ defineProps<{
         <AvatarImage :src="avatar" alt="" />
         <AvatarFallback>{{ name[0] }}</AvatarFallback>
       </Avatar>
-      <span :class="{ hidden: responsive, 'lg:inline': responsive }">
+      <span :class="{ hidden: responsive, 'md:inline': responsive }">
         {{ name }}
       </span>
     </NuxtLink>
@@ -41,8 +41,8 @@ defineProps<{
     variant="ghost"
     class="w-full justify-start gap-1 p-1 font-normal"
     :class="{
-      'lg:p-2': responsive,
-      'lg:gap-2': responsive,
+      'md:p-2': responsive,
+      'md:gap-2': responsive,
       'p-2': !responsive,
       'gap-2': !responsive,
     }"
@@ -52,7 +52,7 @@ defineProps<{
       <AvatarImage :src="avatar" alt="" />
       <AvatarFallback>{{ name[0] }}</AvatarFallback>
     </Avatar>
-    <span :class="{ hidden: responsive, 'lg:inline': responsive }">
+    <span :class="{ hidden: responsive, 'md:inline': responsive }">
       {{ name }}
     </span>
   </Button>
