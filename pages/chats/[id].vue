@@ -7,6 +7,7 @@ interface ChatResponse extends ApiResponse {
   data: {
     chat: Chat;
     messages: Message[];
+    hasMore: boolean;
   };
 }
 
@@ -16,10 +17,23 @@ const config = useRuntimeConfig();
 const route = useRoute();
 const user = useUser();
 
+const scrollElement = ref<HTMLElement | null>(null);
+const inputElement = ref<any>(null);
+const message = ref("");
+const page = ref(1);
+const data = ref<ChatResponse | null>(null);
+
 const headers = useRequestHeaders(["cookie"]);
-const { data, pending } = await useLazyFetch<ChatResponse>(
+const {
+  data: resData,
+  pending,
+  refresh,
+} = await useLazyFetch<ChatResponse>(
   config.public.apiUrl + "/chats/" + route.params.id,
   {
+    params: {
+      page: page,
+    },
     headers,
     credentials: "include",
     ignoreResponseError: true,
@@ -37,10 +51,6 @@ const {
   },
 });
 
-const scrollElement = ref<HTMLElement | null>(null);
-const inputElement = ref<any>(null);
-const message = ref("");
-
 async function sendMessage(e: Event) {
   e.preventDefault();
 
@@ -56,12 +66,18 @@ async function sendMessage(e: Event) {
   message.value = "";
 }
 
+function loadNextPage() {
+  if (!data.value?.data.hasMore) return;
+  page.value += 1;
+  refresh();
+}
+
 function resetScrollPos() {
   const viewport = scrollElement.value?.parentElement?.parentElement;
   viewport?.scrollTo(0, viewport.scrollHeight);
 }
 
-function shouldResetScrollPos(): boolean {
+function scrollPosNearBottom(): boolean {
   const viewport = scrollElement.value?.parentElement?.parentElement;
   if (viewport && viewport.scrollHeight && viewport.clientHeight) {
     const pos = Math.round(viewport.scrollTop);
@@ -82,7 +98,7 @@ watchEffect(() => {
   const newMessage: Message = JSON.parse(wsData.value);
   data.value?.data.messages.unshift(newMessage);
 
-  if (shouldResetScrollPos()) {
+  if (scrollPosNearBottom()) {
     resetScrollPos();
   }
 });
@@ -90,6 +106,24 @@ watchEffect(() => {
 watchEffect(() => {
   inputElement.value?.getInputRef().focus();
 });
+
+watch(
+  () => resData.value,
+  (newVal) => {
+    if (!newVal) return;
+    if (!data.value) {
+      data.value = newVal;
+      return;
+    }
+
+    const newData = data.value;
+    newData.data.hasMore = newVal.data.hasMore;
+    newData.data.messages.push(...newVal.data.messages);
+  },
+  {
+    immediate: true,
+  },
+);
 </script>
 
 <template>
@@ -118,9 +152,10 @@ watchEffect(() => {
           <span>
             {{ data?.data.chat.name }}
           </span>
+          <Button @click="loadNextPage"> Load More </Button>
         </div>
         <Separator />
-        <ScrollArea class="h-full">
+        <ScrollArea class="-mr-2 h-full pr-2 sm:-mr-3 sm:pr-3">
           <ul
             ref="scrollElement"
             class="flex h-full flex-grow flex-col-reverse gap-2 py-2"
