@@ -33,7 +33,7 @@ const { data, pending } = await useLazyFetch<ApiResponse>(
           <ul class="flex flex-col gap-2">
             <li v-for="chat in data?.data">
               <UserButton
-                :href="'chats/' + chat.id"
+                :href="'/chats/' + chat.id"
                 :name="chat.name"
                 :avatar="chat.avatar"
                 responsive
