@@ -84,6 +84,7 @@ async function startChat(userID: number) {
   pending.value = false;
 
   if (response.ok) {
+    await refreshNuxtData("chats");
     await navigateTo("/chats/" + response.data.id);
     open.value = false;
   }

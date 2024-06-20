@@ -27,5 +27,10 @@ export default defineNuxtConfig({
   },
   css: ["~/assets/css/main.css"],
   modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt"],
-  components: ["~/components", "~/components/ui"],
+  components: [
+    "~/components",
+    "~/components/ui",
+    "~/components/user",
+    "~/components/alerts",
+  ],
 });

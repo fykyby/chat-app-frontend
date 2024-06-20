@@ -7,14 +7,12 @@ interface ChatsResponse extends ApiResponse {
 
 const config = useRuntimeConfig();
 
-const headers = useRequestHeaders(["cookie"]);
-const { data, pending } = await useLazyFetch<ChatsResponse>(
-  config.public.apiUrl + "/chats",
-  {
-    headers,
+const { data, status } = await useLazyAsyncData<ChatsResponse>("chats", () =>
+  $fetch(config.public.apiUrl + "/chats", {
+    headers: useRequestHeaders(["cookie"]),
     credentials: "include",
     ignoreResponseError: true,
-  },
+  }),
 );
 </script>
 
@@ -28,7 +26,8 @@ const { data, pending } = await useLazyFetch<ChatsResponse>(
           <NewChatDialog />
         </div>
         <Separator />
-        <Loading v-if="pending" />
+        <Loading v-if="status === 'pending'" />
+        <AlertError v-else-if="!data?.ok" :message="data?.message ?? null" />
         <ScrollArea v-else class="grow py-2 sm:py-4">
           <ul class="flex flex-col gap-2">
             <li v-for="chat in data?.data" :key="chat.id">
@@ -42,7 +41,7 @@ const { data, pending } = await useLazyFetch<ChatsResponse>(
           </ul>
         </ScrollArea>
         <Separator />
-        <div class="flex justify-center pt-2 sm:pt-4">
+        <div v-if="data?.ok" class="flex justify-center pt-2 sm:pt-4">
           <UserMenu />
         </div>
       </nav>

@@ -162,7 +162,7 @@ onMounted(async () => {
       <div v-if="status === 'pending'">
         <Loading class="mx-auto my-2" />
       </div>
-      <div v-else-if="status === 'error'">
+      <div v-else-if="!data?.ok">
         <AlertError :message="data?.message" />
       </div>
       <ul
@@ -204,7 +204,9 @@ onMounted(async () => {
     <div v-if="wsStatus === 'CONNECTING'">
       <Loading class="mx-auto my-2" />
     </div>
-    <AlertError v-else-if="wsStatus === 'CLOSED'" message="Disconnected" />
+    <div v-else-if="wsStatus === 'CLOSED'">
+      <AlertError message="Disconnected" />
+    </div>
     <form v-else class="flex gap-1" @submit="sendMessage">
       <Input v-model="message" autofocus placeholder="Type a message..." />
       <Button type="submit" size="icon" variant="outline">
