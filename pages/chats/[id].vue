@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWebSocket } from "@vueuse/core";
+import { useInfiniteScroll, useWebSocket } from "@vueuse/core";
 import { ArrowLeft, Send } from "lucide-vue-next";
 import type { ApiResponse, Chat, Message } from "~/lib/types";
 
@@ -44,6 +44,22 @@ const { data, status } = await useLazyFetch<ChatResponse>(
   },
 );
 
+useInfiniteScroll(
+  scrollElement,
+  async () => {
+    if (status.value === "success" && data.value?.data.hasMore) {
+      loadNextPage();
+    }
+  },
+  {
+    direction: "top",
+    offset: {
+      top: SCROLL_RESET_MAX_OFFSET,
+    },
+    interval: 500,
+  },
+);
+
 const {
   status: wsStatus,
   data: wsData,
@@ -59,13 +75,11 @@ watch(wsData, async (newWsData) => {
   const newMessage: Message = JSON.parse(newWsData);
   const newMessages = [newMessage, ...messages.value];
 
-  if (scrollPosNearBottom()) {
-    messages.value = newMessages.slice(0, PAGE_SIZE);
+  messages.value = newMessages;
 
+  if (scrollPosNearBottom()) {
     await nextTick();
     resetScrollPos();
-  } else {
-    messages.value = newMessages;
   }
 });
 
@@ -82,14 +96,14 @@ function sendMessage(e: Event) {
   message.value = "";
 }
 
-function incrementPage() {
+function loadNextPage() {
   if (data.value?.data.hasMore) {
     page.value += 1;
   }
 }
 
 function resetScrollPos() {
-  scrollElement.value?.scrollTo(0, scrollElement.value.clientHeight);
+  scrollElement.value?.scrollTo(0, scrollElement.value.scrollHeight);
 }
 
 function scrollPosNearBottom(): boolean {
@@ -123,7 +137,7 @@ onMounted(async () => {
 <template>
   <div class="flex h-full flex-col gap-2 sm:gap-4">
     <div class="flex h-fit items-center gap-2 sm:gap-4">
-      <Button @click="incrementPage">Add page</Button>
+      <Button @click="loadNextPage">Add page</Button>
       <Button as-child href="/chats" size="icon" variant="ghost">
         <NuxtLink>
           <ArrowLeft />
