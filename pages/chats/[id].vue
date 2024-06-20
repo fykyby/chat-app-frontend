@@ -27,7 +27,7 @@ const page = ref(1);
 const messages = ref<Message[]>([]);
 const message = ref("");
 
-const { data, status } = await useLazyFetch<ChatResponse>(
+const { data, status, refresh } = await useLazyFetch<ChatResponse>(
   config.public.apiUrl + "/chats/" + route.params.id,
   {
     headers: useRequestHeaders(["cookie"]),
@@ -37,7 +37,7 @@ const { data, status } = await useLazyFetch<ChatResponse>(
       page: page,
     },
     server: false,
-    watch: [page],
+    watch: false,
     async onResponse(c) {
       messages.value = [...messages.value, ...c.response._data.data.messages];
     },
@@ -74,11 +74,18 @@ const {
 watch(wsData, async (newWsData) => {
   const newMessage: Message = JSON.parse(newWsData);
   const newMessages = [newMessage, ...messages.value];
-  messages.value = newMessages;
 
   if (scrollPosNearBottom()) {
+    if (data.value && messages.value.length > PAGE_SIZE) {
+      page.value = 1;
+      data.value.data.hasMore = true;
+    }
+    messages.value = newMessages.slice(0, 20);
+
     await nextTick();
     resetScrollPos();
+  } else {
+    messages.value = newMessages;
   }
 });
 
@@ -95,9 +102,10 @@ function sendMessage(e: Event) {
   message.value = "";
 }
 
-function loadNextPage() {
+async function loadNextPage() {
   if (data.value?.data.hasMore) {
     page.value += 1;
+    await refresh();
   }
 }
 
