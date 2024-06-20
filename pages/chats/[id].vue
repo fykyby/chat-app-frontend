@@ -74,7 +74,6 @@ const {
 watch(wsData, async (newWsData) => {
   const newMessage: Message = JSON.parse(newWsData);
   const newMessages = [newMessage, ...messages.value];
-
   messages.value = newMessages;
 
   if (scrollPosNearBottom()) {
@@ -137,7 +136,6 @@ onMounted(async () => {
 <template>
   <div class="flex h-full flex-col gap-2 sm:gap-4">
     <div class="flex h-fit items-center gap-2 sm:gap-4">
-      <Button @click="loadNextPage">Add page</Button>
       <Button as-child href="/chats" size="icon" variant="ghost">
         <NuxtLink>
           <ArrowLeft />
