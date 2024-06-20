@@ -27,11 +27,10 @@ const page = ref(1);
 const messages = ref<Message[]>([]);
 const message = ref("");
 
-const requestHeaders = useRequestHeaders(["cookie"]);
 const { data, status } = await useLazyFetch<ChatResponse>(
   config.public.apiUrl + "/chats/" + route.params.id,
   {
-    headers: requestHeaders,
+    headers: useRequestHeaders(["cookie"]),
     credentials: "include",
     ignoreResponseError: true,
     params: {
@@ -41,11 +40,6 @@ const { data, status } = await useLazyFetch<ChatResponse>(
     watch: [page],
     async onResponse(c) {
       messages.value = [...messages.value, ...c.response._data.data.messages];
-
-      if (page.value === 1) {
-        await nextTick();
-        resetScrollPos();
-      }
     },
   },
 );
@@ -110,6 +104,20 @@ function scrollPosNearBottom(): boolean {
   }
   return false;
 }
+
+// Reset scroll position on initial page load
+onMounted(async () => {
+  const stopWatch = watch(
+    [messages, scrollElement],
+    async ([newMessages, newScrollElement]) => {
+      if (newMessages && newScrollElement) {
+        await nextTick();
+        resetScrollPos();
+        stopWatch();
+      }
+    },
+  );
+});
 </script>
 
 <template>
