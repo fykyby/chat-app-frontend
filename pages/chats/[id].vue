@@ -11,7 +11,7 @@ interface ChatResponse extends ApiResponse {
   };
 }
 
-const SCROLL_RESET_MAX_OFFSET = 200;
+const SCROLL_OFFSET = 200;
 const PAGE_SIZE = 20;
 
 const user = useUser();
@@ -54,7 +54,7 @@ useInfiniteScroll(
   {
     direction: "top",
     offset: {
-      top: SCROLL_RESET_MAX_OFFSET,
+      top: SCROLL_OFFSET,
     },
     interval: 500,
   },
@@ -120,7 +120,7 @@ function scrollPosNearBottom(): boolean {
     scrollElement.value.scrollHeight - scrollElement.value.clientHeight;
   const pos = scrollElement.value.scrollTop;
 
-  if (height - pos < SCROLL_RESET_MAX_OFFSET) {
+  if (height - pos < SCROLL_OFFSET) {
     return true;
   }
   return false;
