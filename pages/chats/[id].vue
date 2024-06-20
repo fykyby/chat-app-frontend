@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useWebSocket } from "@vueuse/core";
 import { ArrowLeft, Send } from "lucide-vue-next";
-import { ScrollAreaViewport } from "radix-vue";
 import type { ApiResponse, Chat, Message } from "~/lib/types";
 
 interface ChatResponse extends ApiResponse {
@@ -65,11 +64,14 @@ const {
 watch(wsData, async (newWsData) => {
   const newMessage: Message = JSON.parse(newWsData);
   const newMessages = [newMessage, ...messages.value];
-  messages.value = newMessages;
 
   if (scrollPosNearBottom()) {
+    messages.value = newMessages.slice(0, PAGE_SIZE);
+
     await nextTick();
     resetScrollPos();
+  } else {
+    messages.value = newMessages;
   }
 });
 
